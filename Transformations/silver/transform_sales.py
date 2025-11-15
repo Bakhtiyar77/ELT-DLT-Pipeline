@@ -1,19 +1,22 @@
 import dlt
 from pyspark.sql.functions import *
 
-#Transformation table
+#Create transformation view for sales_stg table
 @dlt.view(
     name = "sales_enr_view",
     comment = "It is a transformation view for sales_enr"
 )
+#create modified column to transform sales_stg table
 def sales_stg_trns():
     df = spark.readStream.table("sales_stg")
     df = df.withColumn("sales_amount", col("quantity") * col("amount"))
     return df 
 
+#Create sales_enr table with auto cdc flow
 dlt.create_streaming_table(
     name = "sales_enr"
 )
+#Create auto cdc flow from sales_enr_view to sales_enr table for SCD Type 1
 dlt.create_auto_cdc_flow(
     target = "sales_enr",
     source = "sales_enr_view",

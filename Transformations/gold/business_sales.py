@@ -1,10 +1,12 @@
 import dlt
 from pyspark.sql.functions import *
-#CREATE MATERIALIZED BUSINESS VIEW
+
+#Create business_sales table
 @dlt.table(
   name = "business_sales"
 )
 
+#Create business sales transformation function
 def business_sales():
   df_fact = spark.read.table("fact_sales")
   df_dimCustomer = spark.read.table("dim_customers")
